@@ -6,7 +6,7 @@
 /*   By: aehrl <aehrl@student.42malaga.com>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 21:25:45 by aehrl             #+#    #+#             */
-/*   Updated: 2025/06/11 20:26:11 by aehrl            ###   ########.fr       */
+/*   Updated: 2025/06/18 14:48:24 by aehrl            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,19 +26,7 @@ philosophers have eaten at least number_of_times_each_philosopher_must_eat
 times, the simulation stops. If not specified, the simulation stops when a
 philosopher dies. */
 
-void	init_table(int argc, char **argv, t_table *t)
-{
-	t->number_of_philosophers = ft_atoi_long(argv[1]);
-	t->time_to_die = ft_atoi_long(argv[2]);
-	t->time_to_eat = ft_atoi_long(argv[3]);
-	t->time_to_sleep = ft_atoi_long(argv[4]);
-	t->optional_arg = false;
-	if (argc == 6)
-	{
-		t->number_of_times_each_philosopher_must_eat = ft_atoi_long(argv[5]);
-		t->optional_arg = true;
-	}
-}
+
 	 
 int main(int argc, char **argv) 
 {
@@ -47,7 +35,7 @@ int main(int argc, char **argv)
 	if (argc < 5 || argc > 6)
 		printf("Error\nWrong number of arguments");
 	else if (!ft_check_arguments(argv))
-		printf("Error\nonly numbers allowed (numbers mus be positive)");
+		printf("Error\nonly numbers allowed (numbers must be positive)");
 	else
 	{
 		init_table(argc, argv,&table);
