@@ -6,7 +6,7 @@
 /*   By: aehrl <aehrl@student.42malaga.com>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 21:25:45 by aehrl             #+#    #+#             */
-/*   Updated: 2025/06/18 14:48:24 by aehrl            ###   ########.fr       */
+/*   Updated: 2025/06/18 16:27:27 by aehrl            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,10 +25,12 @@ During that time, they will need to hold two forks.
 philosophers have eaten at least number_of_times_each_philosopher_must_eat
 times, the simulation stops. If not specified, the simulation stops when a
 philosopher dies. */
-
-
 	 
-int main(int argc, char **argv) 
+// gettimeofday function
+// create time calculation function for milliseconds passed
+// create time manamgment function for eat, sleep think
+
+int main(int argc, char **argv)
 {
 	t_table	table;
 

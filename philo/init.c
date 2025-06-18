@@ -6,11 +6,27 @@
 /*   By: aehrl <aehrl@student.42malaga.com>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/18 14:45:21 by aehrl             #+#    #+#             */
-/*   Updated: 2025/06/18 15:50:41 by aehrl            ###   ########.fr       */
+/*   Updated: 2025/06/18 16:32:35 by aehrl            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+void	clear_philo_lst(t_philo **philolst)
+{
+	t_philo	*aux;
+
+	aux = *philolst;
+	while((*philolst) != NULL)
+	{
+		aux = (*philolst)->next;
+		//free the thread
+		free(*philolst);
+		*philolst = aux;
+	}
+	free(*philolst);
+	*philolst = NULL;
+}
 
 t_philo	*new_philospher(void)
 {
@@ -52,7 +68,19 @@ void	add_philosphers(t_philo *lst, t_table *table)
 		aux = aux->next;
 		i++;
 	}
-} 
+}
+
+struct timeval	*init_time(void)
+{
+	struct timeval *time;
+	struct timezone timezone;
+    
+	time = (struct timeval *)malloc(sizeof(struct timeval));
+	if (!time)
+		return (NULL); // error handling please in the call function
+	gettimeofday(time,&timezone);
+	return (time);
+}
 
 void	init_table(int argc, char **argv, t_table *t)
 {
@@ -61,6 +89,7 @@ void	init_table(int argc, char **argv, t_table *t)
 	t->time_to_eat = ft_atoi_long(argv[3]);
 	t->time_to_sleep = ft_atoi_long(argv[4]);
 	t->optional_arg = false;
+	t->time	= init_time();
 	t->timestamp = 0;
 	if (argc == 6)
 	{

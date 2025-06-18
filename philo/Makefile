@@ -3,7 +3,7 @@ CC = gcc
 CFLAGS = -Wall -Wextra -Werror -DM
 
 NAME = philo
-SRC = main.c utils.c init.c
+SRC = main.c utils.c init.c print.c
 
 # Do not change these
 OBJ = $(SRC:.c=.o)
