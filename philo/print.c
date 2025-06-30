@@ -6,25 +6,11 @@
 /*   By: aehrl <aehrl@student.42malaga.com>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/18 16:30:36 by aehrl             #+#    #+#             */
-/*   Updated: 2025/06/18 16:50:28 by aehrl            ###   ########.fr       */
+/*   Updated: 2025/06/18 17:11:39 by aehrl            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
-
-/* Any state change of a philosopher must be formatted as follows:
-◦ timestamp_in_ms X has taken a fork
-◦ timestamp_in_ms X is eating
-◦ timestamp_in_ms X is sleeping
-◦ timestamp_in_ms X is thinking
-◦ timestamp_in_ms X died
-Replace timestamp_in_ms with the current timestamp in milliseconds
-and X with the philosopher number  
-
-
-int gettimeofday(struct timeval *tv, struct timezone *tz);
-*/
-
 
 /*
 • A displayed state message should not overlap with another message.

@@ -6,7 +6,7 @@
 /*   By: aehrl <aehrl@student.42malaga.com>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 21:25:45 by aehrl             #+#    #+#             */
-/*   Updated: 2025/06/18 16:27:27 by aehrl            ###   ########.fr       */
+/*   Updated: 2025/06/18 17:41:35 by aehrl            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,7 @@ int main(int argc, char **argv)
 		init_table(argc, argv,&table);
 		if (!ft_check_valid_arguments(argc, &table))
 			return (0);
+		//maybe makes more sense to initiate threads here with specific function
 		print_table_info(&table);
 	}
 	return (0);

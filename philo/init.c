@@ -6,7 +6,7 @@
 /*   By: aehrl <aehrl@student.42malaga.com>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/18 14:45:21 by aehrl             #+#    #+#             */
-/*   Updated: 2025/06/18 16:32:35 by aehrl            ###   ########.fr       */
+/*   Updated: 2025/06/30 18:07:33 by aehrl            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,21 +28,22 @@ void	clear_philo_lst(t_philo **philolst)
 	*philolst = NULL;
 }
 
-t_philo	*new_philospher(void)
+t_philo	*new_philospher(t_table *table)
 {
-	t_philo	*philosopher;
+	t_philo	*philo;
 
-	philosopher = (t_philo *)malloc(sizeof(t_philo));
-	if(!philosopher)
+	philo = (t_philo *)malloc(sizeof(t_philo));
+	if(!philo)
 		return (NULL);
-	philosopher->philosopher = 1;
-	philosopher->eat = false;
-	philosopher->forks = false;
-	philosopher->sleep = false;
-	philosopher->think = false;
-	philosopher->dead = false;
-	philosopher->next = NULL;
-	return (philosopher);
+	philo->philosopher = 1;
+	philo->eat = false;
+	philo->forks = false;
+	philo->sleep = false;
+	philo->think = false;
+	philo->dead = false;
+	philo->next = NULL;
+	philo->thread = pthread_create(&philo->thread, NULL, start_a_task, table);
+	return (philo);
 }
 
 void	add_philosphers(t_philo *lst, t_table *table)
@@ -57,7 +58,7 @@ void	add_philosphers(t_philo *lst, t_table *table)
 	i = 2;
 	while (i <= table->number_of_philosophers && aux)
 	{
-		node = new_philospher();
+		node = new_philospher(table);
 		if (!node)
 		{
 			clear_philo_lst(&lst);
@@ -96,7 +97,8 @@ void	init_table(int argc, char **argv, t_table *t)
 		t->number_of_times_each_philosopher_must_eat = ft_atoi_long(argv[5]);
 		t->optional_arg = true;
 	}
-	t->philosophers = new_philospher();
+	t->philosophers = new_philospher(t);
 	if (t->number_of_philosophers > 1)
-		add_philosphers(t->philosophers, t);
+		add_philosphers(t->philosophers, t); // maybe move this into the main to initialise the tasks
+	//t->observer = pthread_create(&t->observer, NULL, start_observer, table);
 }

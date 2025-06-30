@@ -14,11 +14,14 @@ typedef struct s_philo
 	int					philosopher;
 	pthread_t			thread;
 	bool				eat;
+	unsigned long int	times_eaten;
 	bool				forks;
 	bool				pickup;
 	bool				sleep;
 	bool				think;
 	bool				dead;
+	//unsigned long int	time_till_death; Countdown for time of death 
+	//unsigned long int	tod; add time of death to ensure death message displayes within 10ms of death
 	struct s_philo		*next;
 }	t_philo;
 
@@ -32,6 +35,7 @@ typedef struct s_table
 	bool				optional_arg;
 	struct timeval 		*time;
 	int					timestamp; //probably not an int but something else
+	pthread_t			observer; // need to add initialisation for this
 	t_philo				*philosophers;
 
 } t_table;
@@ -40,6 +44,9 @@ typedef struct s_table
 //INITS
 void				init_table(int argc, char **argv, t_table *t);
 struct timeval		*init_time(void);
+
+//TAKS
+void* 				start_a_task(void *table);
 
 //UTILS
 int					ft_check_arguments(char **argv);
