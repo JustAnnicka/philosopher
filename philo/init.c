@@ -6,29 +6,41 @@
 /*   By: aehrl <aehrl@student.42malaga.com>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/18 14:45:21 by aehrl             #+#    #+#             */
-/*   Updated: 2025/06/30 18:07:33 by aehrl            ###   ########.fr       */
+/*   Updated: 2025/06/30 20:48:00 by aehrl            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	clear_philo_lst(t_philo **philolst)
+void	init_threads(t_table *t)
 {
-	t_philo	*aux;
+	long unsigned int		i;
+	int						x;
+	t_philo					*aux;
 
-	aux = *philolst;
-	while((*philolst) != NULL)
+	i = 0;
+	aux = t->philosophers;
+	x = pthread_create(&t->observer, NULL, start_observing, t);
+	if (x != 0 )
 	{
-		aux = (*philolst)->next;
-		//free the thread
-		free(*philolst);
-		*philolst = aux;
+		printf("error creating observer thread \n");
+		return ;
 	}
-	free(*philolst);
-	*philolst = NULL;
+	
+	while (i < t->number_of_philosophers)
+	{
+		x = pthread_create(&aux->thread, NULL, start_a_task, t);
+		i++;
+		if (x != 0 )
+		{
+			printf("error creating philosopher %ld thread \n", i);
+			return ;
+		}
+		aux = aux->next;
+	}
 }
 
-t_philo	*new_philospher(t_table *table)
+t_philo	*new_philospher(void)
 {
 	t_philo	*philo;
 
@@ -36,13 +48,15 @@ t_philo	*new_philospher(t_table *table)
 	if(!philo)
 		return (NULL);
 	philo->philosopher = 1;
+	philo->times_eaten = 0;
 	philo->eat = false;
-	philo->forks = false;
+	philo->forks = true;
 	philo->sleep = false;
 	philo->think = false;
 	philo->dead = false;
 	philo->next = NULL;
-	philo->thread = pthread_create(&philo->thread, NULL, start_a_task, table);
+	philo->prev = NULL;
+	//philo->thread = pthread_create(&philo->thread, NULL, start_a_task, table);
 	return (philo);
 }
 
@@ -58,7 +72,7 @@ void	add_philosphers(t_philo *lst, t_table *table)
 	i = 2;
 	while (i <= table->number_of_philosophers && aux)
 	{
-		node = new_philospher(table);
+		node = new_philospher();
 		if (!node)
 		{
 			clear_philo_lst(&lst);
@@ -66,9 +80,12 @@ void	add_philosphers(t_philo *lst, t_table *table)
 		}
 		node->philosopher = i;
 		aux->next = node;
+		node->prev = aux;
 		aux = aux->next;
 		i++;
 	}
+	node->next = lst; // this is to make it loop
+	lst->prev = node; // this is to make it loop
 }
 
 struct timeval	*init_time(void)
@@ -97,7 +114,7 @@ void	init_table(int argc, char **argv, t_table *t)
 		t->number_of_times_each_philosopher_must_eat = ft_atoi_long(argv[5]);
 		t->optional_arg = true;
 	}
-	t->philosophers = new_philospher(t);
+	t->philosophers = new_philospher();
 	if (t->number_of_philosophers > 1)
 		add_philosphers(t->philosophers, t); // maybe move this into the main to initialise the tasks
 	//t->observer = pthread_create(&t->observer, NULL, start_observer, table);

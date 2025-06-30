@@ -6,7 +6,7 @@
 /*   By: aehrl <aehrl@student.42malaga.com>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/11 19:12:12 by aehrl             #+#    #+#             */
-/*   Updated: 2025/06/18 16:46:38 by aehrl            ###   ########.fr       */
+/*   Updated: 2025/06/30 18:12:55 by aehrl            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,20 +72,18 @@ int	ft_check_arguments(char **argv)
 	return (1);
 }
 
-int	ft_check_valid_arguments(int argc, t_table *table)
+void	clear_philo_lst(t_philo **philolst)
 {
-	if (table->number_of_philosophers == 0)
-		printf("Error\nMinimum number of philosphers is 1\n");
-	else if (table->time_to_die == 0)
-		printf("Error\nMinimum time to die (milliseconds) is 1\n");
-	else if (table->time_to_eat == 0)
-		printf("Error\nMinimum time to eat (milliseconds) is 1\n");
-	else if (table->time_to_sleep == 0)
-		printf("Error\nMinimum time to sleep (milliseconds) is 1\n");
-	else if (argc == 6
-		&& table->number_of_times_each_philosopher_must_eat == 0)
-		printf("Error\nMinimum time to sleep (milliseconds) is 1\n");
-	else
-		return (1);
-	return (0);
+	t_philo	*aux;
+
+	aux = *philolst;
+	while((*philolst) != NULL)
+	{
+		aux = (*philolst)->next;
+		//free the thread
+		free(*philolst);
+		*philolst = aux;
+	}
+	free(*philolst);
+	*philolst = NULL;
 }

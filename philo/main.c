@@ -6,7 +6,7 @@
 /*   By: aehrl <aehrl@student.42malaga.com>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 21:25:45 by aehrl             #+#    #+#             */
-/*   Updated: 2025/06/18 17:41:35 by aehrl            ###   ########.fr       */
+/*   Updated: 2025/06/30 21:02:48 by aehrl            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,10 @@ philosopher dies. */
 int main(int argc, char **argv)
 {
 	t_table	table;
+	t_philo	*aux;
+	long unsigned int		i;
 
+	i = 0;
 	if (argc < 5 || argc > 6)
 		printf("Error\nWrong number of arguments");
 	else if (!ft_check_arguments(argv))
@@ -43,8 +46,18 @@ int main(int argc, char **argv)
 		init_table(argc, argv,&table);
 		if (!ft_check_valid_arguments(argc, &table))
 			return (0);
-		//maybe makes more sense to initiate threads here with specific function
 		print_table_info(&table);
+		init_threads(&table);
+		pthread_join(table.observer, NULL);
+		aux = table.philosophers;
+		while (i < table.number_of_philosophers)
+		{
+			pthread_join(aux->thread, NULL);
+			i++;
+			//printf("end of philo %ld execution\n", i);
+			//add error handling
+			aux = aux->next;
+		}
 	}
 	return (0);
 }
