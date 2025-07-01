@@ -6,7 +6,7 @@
 /*   By: aehrl <aehrl@student.42malaga.com>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/11 19:12:12 by aehrl             #+#    #+#             */
-/*   Updated: 2025/07/01 12:13:37 by aehrl            ###   ########.fr       */
+/*   Updated: 2025/07/01 14:39:09 by aehrl            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ unsigned long int	calculate_time_passed(t_table *table)
 	gettimeofday(&time,&timezone);
 	micropassed = time.tv_usec - table->time->tv_usec;
 	secpassed = time.tv_sec - table->time->tv_sec;
+	
 	table->timestamp = (micropassed / 1000) + (secpassed * 1000);
 	return (table->timestamp);
 }

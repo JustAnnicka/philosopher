@@ -6,7 +6,7 @@
 /*   By: aehrl <aehrl@student.42malaga.com>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/18 14:45:21 by aehrl             #+#    #+#             */
-/*   Updated: 2025/07/01 12:14:21 by aehrl            ###   ########.fr       */
+/*   Updated: 2025/07/01 16:37:15 by aehrl            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,6 +78,7 @@ void	add_philosphers(t_philo *lst, t_table *table)
 			break ;
 		}
 		node->philosopher = i;
+		node->time_till_death = table->time_to_die;
 		aux->next = node;
 		node->prev = aux;
 		aux = aux->next;
@@ -108,12 +109,16 @@ void	init_table(int argc, char **argv, t_table *t)
 	t->optional_arg = false;
 	t->time	= init_time();
 	t->timestamp = 0;
+	pthread_mutex_init(&t->death, NULL);
+	pthread_mutex_init(&t->eating, NULL);
+	t->end = false;
 	if (argc == 6)
 	{
-		t->number_of_times_each_philosopher_must_eat = ft_atoi_long(argv[5]);
+		t->number_of_times_philosophers_must_eat = ft_atoi_long(argv[5]);
 		t->optional_arg = true;
 	}
 	t->philosophers = new_philospher();
+	t->philosophers->time_till_death = t->time_to_die; // could be passed to new_philosopher() instead
 	if (t->number_of_philosophers > 1)
 		add_philosphers(t->philosophers, t); // maybe move this into the main to initialise the tasks
 	//t->observer = pthread_create(&t->observer, NULL, start_observer, table);

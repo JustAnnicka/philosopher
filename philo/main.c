@@ -6,7 +6,7 @@
 /*   By: aehrl <aehrl@student.42malaga.com>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 21:25:45 by aehrl             #+#    #+#             */
-/*   Updated: 2025/06/30 21:39:13 by aehrl            ###   ########.fr       */
+/*   Updated: 2025/07/01 16:36:17 by aehrl            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,8 @@ they die.
 -> time_to_eat (in milliseconds): The time it takes for a philosopher to eat.
 During that time, they will need to hold two forks.
 -> time_to_sleep (in milliseconds): The time a philosopher will spend sleeping.
--> number_of_times_each_philosopher_must_eat (optional argument): If all
-philosophers have eaten at least number_of_times_each_philosopher_must_eat
+-> number_of_times_philosophers_must_eat (optional argument): If all
+philosophers have eaten at least number_of_times_philosophers_must_eat
 times, the simulation stops. If not specified, the simulation stops when a
 philosopher dies. */
 	 
@@ -46,18 +46,16 @@ int main(int argc, char **argv)
 		init_table(argc, argv,&table);
 		if (!ft_check_valid_arguments(argc, &table))
 			return (0);
-		print_table_info(&table);
+		print_table_info(&table); //this will be deleted
 		init_threads(&table);
-		pthread_join(table.observer, NULL);
+		pthread_join(table.observer, NULL); //error handling
 		aux = table.philosophers;
-		while (i < table.number_of_philosophers)
+		while (i++ < table.number_of_philosophers)
 		{
-			pthread_join(aux->thread, NULL);
-			i++;
-			//printf("end of philo %ld execution\n", i);
-			//add error handling
+			pthread_join(aux->thread, NULL); //add error handling
 			aux = aux->next;
 		}
+		//add destroy mutex function
 		//print of the philosophers and their tasks should be handled by observer 
 	}
 	return (0);
