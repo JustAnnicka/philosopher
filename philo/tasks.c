@@ -6,108 +6,125 @@
 /*   By: aehrl <aehrl@student.42malaga.com>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/18 17:07:30 by aehrl             #+#    #+#             */
-/*   Updated: 2025/07/01 17:00:20 by aehrl            ###   ########.fr       */
+/*   Updated: 2025/07/01 19:14:51 by aehrl            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
+/* void	task_eat(t_table *table, t_philo *philo)
+{
+	long unsigned int cur_time;
+
+	//need funtionality if there is only one philospher
+	// redo the calc_passed_function to not use the table as this locks the whole structure
+	// do the prints in the function to save space and initialisations
+	pthread_mutex_lock(&philo->plock);
+	pthread_mutex_lock(&philo->pickup);
+	philo->fork = false;
+	printf("%ld %d has taken a fork\n", calc_time_passed(table), philo->id);
+	pthread_mutex_lock(&philo->prev->pickup);
+	philo->prev->fork = false;
+	printf("%ld %d has taken a fork\n", calc_time_passed(table), philo->id);
+	philo->eat = true;
+	print_thread_process(calc_time_passed(table), philo);
+	usleep(table->time_to_eat);
+	philo->fork = true;
+	pthread_mutex_unlock(&philo->pickup);
+	philo->prev->fork = true;
+	pthread_mutex_unlock(&philo->prev->pickup);
+	cur_time = calc_time_passed(table);
+	philo->time_ill_die += cur_time;
+	if (table->optional_arg == true)
+		philo->times_eaten++;
+	pthread_mutex_lock(&philo->plock);
+} */
+ 
 void	task_eat(t_table *table, t_philo *philo)
 {
-	//if (philo->forks != 0)
-	//	printf("%d %d has taken a fork\n", table->timestamp, philo->philosopher);
-	//if (philo->forks->prev != 0)
-	//	printf("%d %d has taken a fork\n", table->timestamp, philo->philosopher);
-	while (philo->prev->eat == true || philo->next->eat == true)
-	{
-		usleep(10);
-		philo->time_till_death -= 10;
-		if (philo->time_till_death <= 0)
-		{
-			//pthread_mutex_lock(&table->death);
-			philo->dead = true; //set time of death 
-			return ;
-		}
-		table->timestamp = calculate_time_passed(table);
-	} //can we adjust this with the mutex wait time?? calc is still alive function
-	//pthread_mutex_lock(&table->eating);
-	pthread_mutex_lock(&philo->forks);
-	printf("%d %d has taken a fork\n", table->timestamp, philo->philosopher);
-	pthread_mutex_lock(&philo->prev->forks);
-	printf("%d %d has taken a fork\n", table->timestamp, philo->philosopher);
-	philo->eat = true;
-	print_thread_process(table, philo);
+	long unsigned int cur_time;
+
+	cur_time = calc_time_passed(table);
+	//need funtionality if there is only one philospher
+	// redo the calc_passed_function to not use the table as this locks the whole structure
+		// -> THE WAY I AM DOING THE CURTIME IS NOT WHAT I WANT AT THE END IT SHOULD UPDATE BETWEEN EACH STEP
+	// do the prints in the function to save space and initialisations
+	pthread_mutex_lock(&philo->plock);
+	pthread_mutex_lock(&philo->pickup);
+	philo->forks = false;
+	printf("%ld %d has taken a fork\n", cur_time, philo->id);
+	pthread_mutex_lock(&philo->prev->pickup);
+	philo->prev->forks = false;
+	printf("%ld %d has taken a fork\n", cur_time, philo->id);
+	printf("%ld %d is eating\n", cur_time, philo->id);
 	usleep(table->time_to_eat);
-	philo->time_till_death = table->time_to_die;
-	pthread_mutex_unlock(&philo->forks);
-	pthread_mutex_unlock(&philo->prev->forks);
-	//pthread_mutex_unlock(&table->eating);
+	philo->forks = true;
+	pthread_mutex_unlock(&philo->pickup);
+	philo->prev->forks = true;
+	pthread_mutex_unlock(&philo->prev->pickup);
+	philo->time_ill_die += cur_time + table->time_to_eat;
 	if (table->optional_arg == true)
-		philo->times_eaten++; //check this with the observer for the last philosopher
-	//maybe create lock for time to die resource
-	//reset time_to_die countdown
+		philo->times_eaten++;
+	pthread_mutex_unlock(&philo->plock);
 }
 
 void	task_sleep(t_table *table, t_philo *philo)
 {
-	long unsigned int	time;
-	
-	time = table->time_to_eat;
+	long unsigned int cur_time;
+
+	cur_time = calc_time_passed(table);
+	// update the get_time_passed function for a correct time measurement
+	pthread_mutex_lock(&philo->plock);
 	philo->sleep = true;
-	//do a little calc for time_till_death minus time to sleep
-	//check if the time_till_death is <= 0 to end programm
-	usleep(table->time_to_eat);
-	print_thread_process(table, philo);
-	if (time >= table->time_to_die)
+	printf("%ld %d is sleeping\n",cur_time, philo->id);
+	usleep(table->time_to_sleep);
+	if (cur_time + table->time_to_sleep >= philo->time_ill_die)
 	{
-		philo->dead = true; //set time of death 
-		return ;
+		cur_time =+ table->time_to_sleep;
+		philo->time_of_death = cur_time - (cur_time - philo->time_ill_die);
+		philo->dead = true;
+		printf("%ld %d died\n",philo->time_of_death, philo->id);
 	}
-	philo->sleep = false;
-	//set sleep to true;
-	//start sleeping for time_to_sleep;
-	//subtract_time_to_sleep from time_till_death
-	//if time_till_death is <= 0 end program
-	//when sleep is done set sleep to false
+	philo->sleep = false; // dont think I need these booleans as I now print inside the function
+	pthread_mutex_unlock(&philo->plock);
 }
 
 void	task_think(t_table *table, t_philo *philo)
 {
-	long unsigned int	time;
-	
-	time = 0;
+
+	long unsigned int cur_time;
+
+	// NEED TO UPDATE HOW THE calc_time_passed function works so that i can get the actual time philo was thinking	
+	pthread_mutex_lock(&philo->plock);
 	philo->think = true;
-	//while (philo->forks == false || philo->prev->forks == false)
-	while (philo->prev->eat == true || philo->next->eat == true)
+	if (philo->forks == true && philo->prev->forks == true)
+		philo->think = false;
+	pthread_mutex_unlock(&philo->plock);
+	cur_time = calc_time_passed(table);
+	pthread_mutex_lock(&philo->plock);
+	if (cur_time >= philo->time_ill_die)
 	{
-		usleep(10);
-		time += 10;
-		if (time >= table->time_to_die)
-		{
-			philo->dead = true; //set time of death 
-			return ;
-		}
-	} 
-	print_thread_process(table, philo);
-	/* if (philo->forks) // is this the same as the wait before?
-		philo->think = false; */
-	//subtract_time_to_think from time_till_death
-	//if time_till_death is <= 0 end program
+		philo->time_of_death = cur_time - (cur_time - philo->time_ill_die);
+		philo->dead = true;
+		printf("%ld %d died\n",philo->time_of_death, philo->id);
+	}
+	pthread_mutex_unlock(&philo->plock);
 }
 
-int	still_alive(t_table *table, t_philo *philo)
+int	still_alive(t_philo *philo)
 {
-	pthread_mutex_lock(&table->death);
+	pthread_mutex_lock(&philo->plock);
 	if (philo->dead == true)
-		return (pthread_mutex_unlock(&table->death), 0);
-	pthread_mutex_unlock(&table->death);
-	return (0);
+		return (pthread_mutex_unlock(&philo->plock), 0);
+	pthread_mutex_unlock(&philo->plock);
+	return (1);
 }
 
 void*	start_a_task(void *table)
 {
 	static int	i;
 	int			p;
+	int			x; // just for limiting the loop for now
 	t_table		*t;
 	t_philo		*aux;
 	
@@ -122,16 +139,18 @@ void*	start_a_task(void *table)
 	}
 	//printf("philosopher %d thread\n", i);
 	//this will be the while loop where i need to check if alive and do the tasks
-	p = 0;
-	while(still_alive(table, aux))
+	x = 0;
+	while(still_alive(aux) && x++ < 5)
 	{
-		if (aux->prev->eat == false && aux->next->eat == false) // this should be the standard (maybe no if check)
-			task_eat(t, aux);
-		if (aux->dead == false && aux->prev->eat == true)
+		 // this should be the standard (maybe no if check)
+		if (p % 2 == 0)
+			usleep(10);
+		task_eat(t, aux);
+		if (still_alive(aux))
 			task_sleep(t, aux);
-		if (aux->dead == false)
+		if (still_alive(aux))
 			task_think(t, aux);
+		// change the logic here to have even numbers sleep and uneven numbers check eat (unless it is the last philo)
 	}
-	
 	return (table); 
 }

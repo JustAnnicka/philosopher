@@ -6,25 +6,26 @@
 /*   By: aehrl <aehrl@student.42malaga.com>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/11 19:12:12 by aehrl             #+#    #+#             */
-/*   Updated: 2025/07/01 14:39:09 by aehrl            ###   ########.fr       */
+/*   Updated: 2025/07/01 19:02:55 by aehrl            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-unsigned long int	calculate_time_passed(t_table *table)
+unsigned long int	calc_time_passed(t_table *table)
 {
 	struct timeval time;
 	struct timezone timezone;
     unsigned long int	micropassed;
     unsigned long int	secpassed;
+    unsigned long int 	timestamp;
 
 	gettimeofday(&time,&timezone);
 	micropassed = time.tv_usec - table->time->tv_usec;
 	secpassed = time.tv_sec - table->time->tv_sec;
 	
-	table->timestamp = (micropassed / 1000) + (secpassed * 1000);
-	return (table->timestamp);
+	timestamp = (micropassed / 1000) + (secpassed * 1000);
+	return (timestamp);
 }
 
 int	ft_is_digit(char *argv)
@@ -98,7 +99,8 @@ void	clear_philo_lst(t_philo **philolst, long unsigned int size)
 	while(i < size)
 	{
 		aux = (*philolst)->next;
-		pthread_mutex_destroy(&aux->forks);
+		pthread_mutex_destroy(&aux->pickup);
+		pthread_mutex_destroy(&aux->plock);
 		free(*philolst);
 		*philolst = aux;
 	}

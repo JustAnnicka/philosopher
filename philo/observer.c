@@ -6,7 +6,7 @@
 /*   By: aehrl <aehrl@student.42malaga.com>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 18:22:25 by aehrl             #+#    #+#             */
-/*   Updated: 2025/07/01 15:27:50 by aehrl            ###   ########.fr       */
+/*   Updated: 2025/07/01 19:06:14 by aehrl            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,15 +52,13 @@ void*	start_observing(void *table)
 	printf("created observer thread\n");
 	while(1)
 	{
-		pthread_mutex_lock(&t->death);
+		pthread_mutex_lock(&t->lock);
 		is_everyone_alive(t);
 		if (t->optional_arg == true)
 		{
-			pthread_mutex_lock(&t->eating);
 			did_everyone_eat(t);
-			pthread_mutex_unlock(&t->eating);
 		}
-		pthread_mutex_lock(&t->death);
+		pthread_mutex_unlock(&t->lock);
 		if (t->end == true)
 			break ;
 	}
