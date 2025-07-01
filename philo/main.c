@@ -6,7 +6,7 @@
 /*   By: aehrl <aehrl@student.42malaga.com>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 21:25:45 by aehrl             #+#    #+#             */
-/*   Updated: 2025/06/30 21:02:48 by aehrl            ###   ########.fr       */
+/*   Updated: 2025/06/30 21:39:13 by aehrl            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,6 +58,7 @@ int main(int argc, char **argv)
 			//add error handling
 			aux = aux->next;
 		}
+		//print of the philosophers and their tasks should be handled by observer 
 	}
 	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: aehrl <aehrl@student.42malaga.com>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/18 17:07:30 by aehrl             #+#    #+#             */
-/*   Updated: 2025/06/30 21:08:23 by aehrl            ###   ########.fr       */
+/*   Updated: 2025/07/01 12:13:13 by aehrl            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,40 +22,37 @@
 void	task_eat(t_table *table, t_philo *philo)
 {
 	long unsigned int	time; // maybe use the time_till_death variable in the philo structure
-	
+
 	time = 0;
-	while (philo->forks == false || philo->prev->forks == false)
+	//while (philo->forks == false || philo->prev->forks == false)
+	while (philo->prev->pickup == true || philo->next->pickup == true)
 	{
-		usleep(100);
-		time += 100;
+		usleep(10);
+		time += 10;
 		if (time >= table->time_to_die)
 		{
 			philo->dead = true; //set time of death 
 			return ;
 		}
 	}
+	pthread_mutex_lock(&philo->forks);
+	pthread_mutex_lock(&philo->prev->forks);
+//	//philo->prev->forks = false;
+	//philo->forks = false;
 	philo->pickup = true;
-	philo->prev->forks = false;
-	philo->forks = false;
 	philo->eat = true;
 	usleep(table->time_to_eat);
 	calculate_time_passed(table); // move this into the print thread instead
 	print_thread_process(table->timestamp, philo);
+	pthread_mutex_unlock(&philo->forks);
+	pthread_mutex_unlock(&philo->prev->forks);
 	if (table->optional_arg == true)
 		philo->times_eaten++; // check this with the observer for the last philosopher
-	philo->prev->forks = true;
-	philo->forks = true;
+	//philo->prev->forks = true;
+	//philo->forks = true;
+	philo->pickup = false;
+	// maybe create lock for time to die resource
 	//reset time_to_die countdown
-
-	//check if we can pick up fork
-	// -> no keep checking till resource becomes available subract time passed from time till dead
-	// ---> time_till_death is <= 0 end program
-	// -> yes continue and set eat as true; ()
-	//pick up forks
-	//start eating for time_to_eat
-	//if number_of_times.. arg is true add to counter
-	//place down forks
-	//reset time to die countdown for this philo && and set eat to false
 }
 
 void	task_sleep(t_table *table, t_philo *philo)
@@ -88,10 +85,11 @@ void	task_think(t_table *table, t_philo *philo)
 	
 	time = 0;
 	philo->think = true;
-	while (philo->forks == false || philo->prev->forks == false)
+	//while (philo->forks == false || philo->prev->forks == false)
+	while (philo->prev->pickup == true || philo->next->pickup == true)
 	{
-		usleep(100);
-		time += 100;
+		usleep(10);
+		time += 10;
 		if (time >= table->time_to_die)
 		{
 			philo->dead = true; //set time of death 
@@ -126,7 +124,7 @@ void*	start_a_task(void *table)
 	}
 	//printf("philosopher %d thread\n", i);
 	//this will be the while loop where i need to check if alive and do the tasks
-	if (aux->forks == true && aux->prev->forks == true) // this should be the standard (maybe no if check)
+	if (aux->prev->eat == false && aux->next->eat == false) // this should be the standard (maybe no if check)
 		task_eat(t, aux);
 	else if (aux->dead == false && aux->prev->eat == true)
 		task_sleep(t, aux);

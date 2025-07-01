@@ -15,7 +15,7 @@ typedef struct s_philo
 	pthread_t			thread;
 	bool				eat;
 	unsigned long int	times_eaten;
-	bool				forks; // is this redundant ?? could i not just check pickup state
+	pthread_mutex_t		forks; // is this redundant ?? could i not just check pickup state
 	bool				pickup;
 	bool				sleep;
 	bool				think;
@@ -58,7 +58,7 @@ int					ft_check_arguments(char **argv);
 int					ft_check_valid_arguments(int argc, t_table *table);
 long unsigned int	ft_atoi_long(char *argv);
 int					ft_is_digit(char *argv); //might not need
-void				clear_philo_lst(t_philo **philo_lst);
+void		clear_philo_lst(t_philo **philolst, long unsigned int size);
 unsigned long int	calculate_time_passed(t_table *table);
 
 //DELETE ME LATER

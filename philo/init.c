@@ -6,7 +6,7 @@
 /*   By: aehrl <aehrl@student.42malaga.com>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/18 14:45:21 by aehrl             #+#    #+#             */
-/*   Updated: 2025/06/30 20:48:00 by aehrl            ###   ########.fr       */
+/*   Updated: 2025/07/01 12:14:21 by aehrl            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,6 @@ void	init_threads(t_table *t)
 		printf("error creating observer thread \n");
 		return ;
 	}
-	
 	while (i < t->number_of_philosophers)
 	{
 		x = pthread_create(&aux->thread, NULL, start_a_task, t);
@@ -50,7 +49,7 @@ t_philo	*new_philospher(void)
 	philo->philosopher = 1;
 	philo->times_eaten = 0;
 	philo->eat = false;
-	philo->forks = true;
+	pthread_mutex_init(&philo->forks, NULL);
 	philo->sleep = false;
 	philo->think = false;
 	philo->dead = false;
@@ -75,7 +74,7 @@ void	add_philosphers(t_philo *lst, t_table *table)
 		node = new_philospher();
 		if (!node)
 		{
-			clear_philo_lst(&lst);
+			clear_philo_lst(&lst, table->number_of_philosophers);
 			break ;
 		}
 		node->philosopher = i;

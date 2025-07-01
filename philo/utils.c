@@ -6,7 +6,7 @@
 /*   By: aehrl <aehrl@student.42malaga.com>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/11 19:12:12 by aehrl             #+#    #+#             */
-/*   Updated: 2025/06/30 18:12:55 by aehrl            ###   ########.fr       */
+/*   Updated: 2025/07/01 12:13:37 by aehrl            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,7 @@ int	ft_check_arguments(char **argv)
 	return (1);
 }
 
-void	clear_philo_lst(t_philo **philolst)
+/* void	clear_philo_lst(t_philo **philolst)
 {
 	t_philo	*aux;
 
@@ -81,6 +81,23 @@ void	clear_philo_lst(t_philo **philolst)
 	{
 		aux = (*philolst)->next;
 		//free the thread
+		free(*philolst);
+		*philolst = aux;
+	}
+	free(*philolst);
+	*philolst = NULL;
+} */
+void	clear_philo_lst(t_philo **philolst, long unsigned int size)
+{
+	t_philo	*aux;
+	long unsigned int 	i;
+	
+	aux = *philolst;
+	i = 0;
+	while(i < size)
+	{
+		aux = (*philolst)->next;
+		pthread_mutex_destroy(&aux->forks);
 		free(*philolst);
 		*philolst = aux;
 	}
