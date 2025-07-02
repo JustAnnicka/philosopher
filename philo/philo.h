@@ -9,9 +9,17 @@
 #include <stdbool.h> //can I use this?
 #include <unistd.h> //delete me?? (using for sleep)
 
+# define YELLOW "\033[0;93m"
+# define BLUE "\033[0;96m"
+# define GREEN "\033[0;32m"
+# define ORANGE "\033[0;33m"
+# define RED "\033[0;31m"
+# define WHITE "\033[37;1m"
+
+
 typedef struct s_philo
 {
-	int					id;
+	long unsigned int	id;
 	pthread_t			thread;
 	bool				eat; //none of these are needed in theory if I do the print in the function itself
 	unsigned long int	times_eaten;
@@ -20,7 +28,7 @@ typedef struct s_philo
 	bool				think; //none of these are needed in theory if I do the print in the function itself
 	bool				dead;
 	unsigned long int	time_ill_die; // should rename to time_ill_die
-	unsigned long int	time_of_death;
+	///unsigned long int	time_of_death; redundant as it should equal time_ill_die
 	pthread_mutex_t		pickup;
 	pthread_mutex_t		plock;
 	struct s_philo		*next;
@@ -49,18 +57,18 @@ void				init_threads(t_table *t);
 
 //OBSERVER
 void*				start_observing(void *table);
+int					is_everyone_alive(t_table *table);
 
 //TAKS
 void* 				start_a_task(void *table);
-void				print_thread_process(unsigned long int timestamp, t_philo *philo);
 
 //UTILS
 int					ft_check_arguments(char **argv);
-int					ft_check_valid_arguments(int argc, t_table *table);
+int					ft_check_valid_arguments(int argc, t_table *table); //gets called in main does not need to be in here anymore
 long unsigned int	ft_atoi_long(char *argv);
-int					ft_is_digit(char *argv); //might not need
+int					ft_is_digit(char *argv);
 void				clear_philo_lst(t_philo **philolst, long unsigned int size);
-unsigned long int	calc_time_passed(t_table *table);
+unsigned long int	calc_time_passed(struct timeval *start);
 
 //DELETE ME LATER
 void				print_table_info(t_table *table);

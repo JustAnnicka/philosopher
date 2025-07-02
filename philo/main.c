@@ -6,29 +6,47 @@
 /*   By: aehrl <aehrl@student.42malaga.com>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 21:25:45 by aehrl             #+#    #+#             */
-/*   Updated: 2025/07/01 16:36:17 by aehrl            ###   ########.fr       */
+/*   Updated: 2025/07/02 19:47:10 by aehrl            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-/* 
--> number_of_philosophers: The number of philosophers and also the number
-of forks.
--> time_to_die (in milliseconds): If a philosopher has not started eating within
-time_to_die milliseconds since their last meal or the start of the simulation,
-they die.
--> time_to_eat (in milliseconds): The time it takes for a philosopher to eat.
-During that time, they will need to hold two forks.
--> time_to_sleep (in milliseconds): The time a philosopher will spend sleeping.
--> number_of_times_philosophers_must_eat (optional argument): If all
-philosophers have eaten at least number_of_times_philosophers_must_eat
-times, the simulation stops. If not specified, the simulation stops when a
-philosopher dies. */
-	 
-// gettimeofday function
-// create time calculation function for milliseconds passed
-// create time manamgment function for eat, sleep think
+int	ft_check_valid_arguments(int argc, t_table *table)
+{
+	if (table->number_of_philosophers == 0)
+		printf("Error\nMinimum number of philosphers is 1\n");
+	else if (table->time_to_die == 0)
+		printf("Error\nMinimum time to die (milliseconds) is 1\n");
+	else if (table->time_to_eat == 0)
+		printf("Error\nMinimum time to eat (milliseconds) is 1\n");
+	else if (table->time_to_sleep == 0)
+		printf("Error\nMinimum time to sleep (milliseconds) is 1\n");
+	else if (argc == 6
+		&& table->number_of_times_philosophers_must_eat == 0)
+		printf("Error\nMinimum time to sleep (milliseconds) is 1\n");
+	else
+		return (1);
+	return (0);
+}
+
+void	destroy_mutex(t_table *table)
+{
+	clear_philo_lst(&table->philosophers, table->number_of_philosophers);
+	pthread_mutex_destroy(&table->lock);
+}
+
+void	print_table_info(t_table *table) //DELETE ME LATER FUNCTION
+{
+	printf("# of philos:   %lu\n", table->number_of_philosophers);
+	printf("time_to_die:   %lu\n", table->time_to_die);
+	printf("time_to_eat:   %lu\n", table->time_to_eat);
+	printf("time_to_sleep: %lu\n", table->time_to_sleep);
+	printf("optional arg:  %i\n", table->optional_arg);
+	if (table->optional_arg == true)
+		printf("time must eat: %lu\n",
+		table->number_of_times_philosophers_must_eat);
+} 
 
 int main(int argc, char **argv)
 {
@@ -55,7 +73,7 @@ int main(int argc, char **argv)
 			pthread_join(aux->thread, NULL); //add error handling
 			aux = aux->next;
 		}
-		//add destroy mutex function
+		destroy_mutex(&table);
 		//print of the philosophers and their tasks should be handled by observer 
 	}
 	return (0);

@@ -6,23 +6,22 @@
 /*   By: aehrl <aehrl@student.42malaga.com>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/11 19:12:12 by aehrl             #+#    #+#             */
-/*   Updated: 2025/07/01 19:02:55 by aehrl            ###   ########.fr       */
+/*   Updated: 2025/07/02 19:48:12 by aehrl            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-unsigned long int	calc_time_passed(t_table *table)
+unsigned long	calc_time_passed(struct timeval *start)
 {
-	struct timeval time;
-	struct timezone timezone;
-    unsigned long int	micropassed;
-    unsigned long int	secpassed;
-    unsigned long int 	timestamp;
+	struct timeval	time;
+    unsigned long 	micropassed;
+    unsigned long	secpassed;
+    unsigned long 	timestamp;
 
-	gettimeofday(&time,&timezone);
-	micropassed = time.tv_usec - table->time->tv_usec;
-	secpassed = time.tv_sec - table->time->tv_sec;
+	gettimeofday(&time,NULL);
+	micropassed = time.tv_usec - start->tv_usec;
+	secpassed = time.tv_sec - start->tv_sec;
 	
 	timestamp = (micropassed / 1000) + (secpassed * 1000);
 	return (timestamp);
@@ -74,21 +73,6 @@ int	ft_check_arguments(char **argv)
 	return (1);
 }
 
-/* void	clear_philo_lst(t_philo **philolst)
-{
-	t_philo	*aux;
-
-	aux = *philolst;
-	while((*philolst) != NULL)
-	{
-		aux = (*philolst)->next;
-		//free the thread
-		free(*philolst);
-		*philolst = aux;
-	}
-	free(*philolst);
-	*philolst = NULL;
-} */
 void	clear_philo_lst(t_philo **philolst, long unsigned int size)
 {
 	t_philo	*aux;
