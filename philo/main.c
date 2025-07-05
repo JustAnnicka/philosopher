@@ -32,8 +32,10 @@ int	ft_check_valid_arguments(int argc, t_table *table)
 
 void	destroy_mutex(t_table *table)
 {
+	printf("ENTER DESTROY MUTEX\n");
 	clear_philo_lst(&table->philosophers, table->number_of_philosophers);
 	pthread_mutex_destroy(&table->lock);
+	pthread_mutex_destroy(&table->print_lock);
 }
 
 void	print_table_info(t_table *table) //DELETE ME LATER FUNCTION
@@ -71,6 +73,7 @@ int main(int argc, char **argv)
 		while (i++ < table.number_of_philosophers)
 		{
 			pthread_join(aux->thread, NULL); //add error handling
+			printf("Thread %ld ended\n",aux->id);
 			aux = aux->next;
 		}
 		destroy_mutex(&table);

@@ -1,12 +1,12 @@
 
 #ifndef PHILO_H
-#define PHILO_H
+ #define PHILO_H
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
 #include <sys/time.h>
-#include <stdbool.h> //can I use this?
+#include <stdbool.h> //can I use this? ->MAYBE JUST DEFINE THIS TO BE SURE
 #include <unistd.h> //delete me?? (using for sleep)
 
 # define YELLOW "\033[0;93m"
@@ -14,7 +14,7 @@
 # define GREEN "\033[0;32m"
 # define ORANGE "\033[0;33m"
 # define RED "\033[0;31m"
-# define WHITE "\033[37;1m"
+# define WHITE "\033[0;1m"
 
 
 typedef struct s_philo
@@ -23,14 +23,11 @@ typedef struct s_philo
 	pthread_t			thread;
 	bool				eat; //none of these are needed in theory if I do the print in the function itself
 	unsigned long int	times_eaten;
-	bool				forks;
 	bool				sleep; //none of these are needed in theory if I do the print in the function itself
-	bool				think; //none of these are needed in theory if I do the print in the function itself
-	bool				dead;
 	unsigned long int	time_ill_die; // should rename to time_ill_die
-	///unsigned long int	time_of_death; redundant as it should equal time_ill_die
 	pthread_mutex_t		pickup;
 	pthread_mutex_t		plock;
+	unsigned long		start_time;
 	struct s_philo		*next;
 	struct s_philo		*prev;
 }	t_philo;
@@ -43,9 +40,10 @@ typedef struct s_table
 	long unsigned int	time_to_sleep;
 	long unsigned int	number_of_times_philosophers_must_eat;
 	bool				optional_arg;
-	struct timeval 		*time;
+	struct timeval 		*time; //DONT NEED THIS AS NOW EACH PHILO HAS THIS SET (COULD MAYBE SWITCH THIS TO UNSIGNED LONG AND USE THIS AS GLOBAL CHECK)
 	pthread_t			observer;
 	pthread_mutex_t		lock;
+	pthread_mutex_t		print_lock;
 	bool				end;
 	t_philo				*philosophers;
 } t_table;
@@ -68,7 +66,8 @@ int					ft_check_valid_arguments(int argc, t_table *table); //gets called in mai
 long unsigned int	ft_atoi_long(char *argv);
 int					ft_is_digit(char *argv);
 void				clear_philo_lst(t_philo **philolst, long unsigned int size);
-unsigned long int	calc_time_passed(struct timeval *start);
+//unsigned long int	calc_time_passed(struct timeval *start);
+unsigned long int	calc_time_passed(void);
 
 //DELETE ME LATER
 void				print_table_info(t_table *table);

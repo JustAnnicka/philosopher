@@ -12,7 +12,7 @@
 
 #include "philo.h"
 
-void	did_everyone_eat(t_table *table)
+int	did_everyone_eat(t_table *table)
 {
 	t_philo				*aux;
 	long unsigned int	i;
@@ -21,42 +21,29 @@ void	did_everyone_eat(t_table *table)
 	aux = table->philosophers;
 	i = 0; //could also do this check with the philo number
 	check = true;
-	//need to do the mutex thingy here
-	pthread_mutex_lock(&table->lock);
 	while (i < table->number_of_philosophers)
 	{
-		pthread_mutex_lock(&aux->plock);
+	//	pthread_mutex_lock(&aux->plock);
+	//	pthread_mutex_lock(&table->print_lock);
+		//printf("%ld Times eaten: %ld\n", aux->id, aux->times_eaten);
 		if (aux->times_eaten < table->number_of_times_philosophers_must_eat)
 			check = false;
-		pthread_mutex_unlock(&aux->plock);
+		aux = aux->next;
+	//	pthread_mutex_unlock(&table->print_lock);
+	//	pthread_mutex_unlock(&aux->plock);
+		i++;
 	}
+	pthread_mutex_lock(&table->lock);
 	if (check == true)
 		table->end = true;
 	pthread_mutex_unlock(&table->lock);
+	return (check);
 }
 
 int	is_everyone_alive(t_table *table)
 {
-	t_philo	*aux;
-	long unsigned int	i;
-
-	aux = table->philosophers;
-	i = 0; //could also do this check with the philo number
-	pthread_mutex_lock(&table->lock);
-	while (i < table->number_of_philosophers)
-	{
-		pthread_mutex_lock(&aux->plock);
-		if (aux->dead == true)
-		{
-			table->end = true;
-			printf("%sSOMEONE DIED\n", RED);
-			return (0);
-		}	
-		pthread_mutex_unlock(&aux->plock);
-		i++;
-	}
-	pthread_mutex_unlock(&aux->plock);
-	pthread_mutex_unlock(&table->lock);
+	if (table->end == true)
+		return (0);
 	return (1);
 }
 
@@ -68,17 +55,23 @@ void*	start_observing(void *table)
 	printf("created observer thread\n");
 	while(1)
 	{
-		pthread_mutex_lock(&t->lock);
-		is_everyone_alive(t);
-		if (t->optional_arg == true)
+	 	if (t->optional_arg == true)
 		{
-			did_everyone_eat(t);
+			if (did_everyone_eat(t))
+				break ;
 		}
-		pthread_mutex_unlock(&t->lock);
 		if (t->end == true)
 			break ;
 	}
-	pthread_mutex_unlock(&t->lock);
 	printf("end of observer thread\n");
 	return (table); 
 }
+
+//new fucking plan
+//->have the philosophers lock the table when death and set the end attribute (print right then and there death message)
+//-> Now the observer will lock the table to check alive (in alive function) and then unlock it (THIS CAUSED DEADLOCK)
+//-> Observer will lock plock while checking the eaten state
+//-> if everyone has eaten all meals we will lock the table to set end
+
+//The new still alive function litterally just checks the table attribute (does not print)
+//-> THis should ensure that the process end no matter which philospher has died and we can remove the dead boolean from the philo stru

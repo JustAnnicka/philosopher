@@ -12,19 +12,28 @@
 
 #include "philo.h"
 
-unsigned long	calc_time_passed(struct timeval *start)
+/* unsigned long	calc_time_passed(struct timeval *start)
 {
 	struct timeval	time;
+	struct timeval	aux;
     unsigned long 	micropassed;
     unsigned long	secpassed;
-    unsigned long 	timestamp;
+   // unsigned long 	timestamp;
 
 	gettimeofday(&time,NULL);
-	micropassed = time.tv_usec - start->tv_usec;
-	secpassed = time.tv_sec - start->tv_sec;
+	aux = *start;
+	micropassed = time.tv_usec - aux.tv_usec;
+	secpassed = time.tv_sec - aux.tv_sec;
 	
-	timestamp = (micropassed / 1000) + (secpassed * 1000);
-	return (timestamp);
+	//timestamp = (micropassed / 1000) + (secpassed * 1000);
+	return ((micropassed / 1000) + (secpassed * 1000));
+} */
+unsigned long	calc_time_passed(void)
+{
+	struct timeval	time;
+
+	gettimeofday(&time,NULL);
+	return ((time.tv_usec / 1000) + (time.tv_sec * 1000));
 }
 
 int	ft_is_digit(char *argv)
@@ -82,12 +91,14 @@ void	clear_philo_lst(t_philo **philolst, long unsigned int size)
 	i = 0;
 	while(i < size)
 	{
-		aux = (*philolst)->next;
 		pthread_mutex_destroy(&aux->pickup);
 		pthread_mutex_destroy(&aux->plock);
+		if (size > 1)
+		{
+			aux = (*philolst)->next;
+		}
 		free(*philolst);
 		*philolst = aux;
+		i++;
 	}
-	free(*philolst);
-	*philolst = NULL;
 }

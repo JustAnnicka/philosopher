@@ -26,8 +26,10 @@ void	init_threads(t_table *t)
 		printf("error creating observer thread \n");
 		return ;
 	}
+	t->time	= init_time();
 	while (i < t->number_of_philosophers)
 	{
+		aux->start_time = (t->time->tv_usec / 1000) + (t->time->tv_sec * 1000);
 		x = pthread_create(&aux->thread, NULL, start_a_task, t);
 		i++;
 		if (x != 0 )
@@ -49,15 +51,11 @@ t_philo	*new_philospher(void)
 	philo->id = 1;
 	philo->times_eaten = 0;
 	philo->eat = false;
-	philo->forks = true;
 	philo->sleep = false;
-	philo->think = false;
-	philo->dead = false;
 	pthread_mutex_init(&philo->pickup, NULL);
 	pthread_mutex_init(&philo->plock, NULL);
 	philo->next = NULL;
 	philo->prev = NULL;
-	//philo->thread = pthread_create(&philo->thread, NULL, start_a_task, table);
 	return (philo);
 }
 
@@ -109,8 +107,9 @@ void	init_table(int argc, char **argv, t_table *t)
 	t->time_to_eat = ft_atoi_long(argv[3]) * 1000;
 	t->time_to_sleep = ft_atoi_long(argv[4]) * 1000;
 	t->optional_arg = false;
-	t->time	= init_time();
+	//t->time	= init_time();
 	pthread_mutex_init(&t->lock, NULL);
+	pthread_mutex_init(&t->print_lock, NULL);
 	t->end = false;
 	if (argc == 6)
 	{
@@ -122,4 +121,6 @@ void	init_table(int argc, char **argv, t_table *t)
 	if (t->number_of_philosophers > 1)
 		add_philosphers(t->philosophers, t); // maybe move this into the main to initialise the tasks
 	//t->observer = pthread_create(&t->observer, NULL, start_observer, table);
+
+	//THIS SHOULD BE ERROR HANDLED AND THE WHOLE PROCESS SHOULD BE KILLED
 }
