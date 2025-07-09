@@ -68,6 +68,7 @@ int					ft_is_digit(char *argv);
 void				clear_philo_lst(t_philo **philolst, long unsigned int size);
 //unsigned long int	calc_time_passed(struct timeval *start);
 unsigned long int	calc_time_passed(void);
+void				print_thread_process(t_table *table, t_philo *philo);
 
 //DELETE ME LATER
 void				print_table_info(t_table *table);

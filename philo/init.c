@@ -6,7 +6,7 @@
 /*   By: aehrl <aehrl@student.42malaga.com>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/18 14:45:21 by aehrl             #+#    #+#             */
-/*   Updated: 2025/07/01 19:16:35 by aehrl            ###   ########.fr       */
+/*   Updated: 2025/07/09 12:31:37 by aehrl            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ void	add_philosphers(t_philo *lst, t_table *table)
 	long unsigned int		i;
 
 	if (!lst)
-		return ; // do i need to double check this??
+		return ;
 	aux = lst;
 	i = 2;
 	while (i <= table->number_of_philosophers && aux)
@@ -84,8 +84,8 @@ void	add_philosphers(t_philo *lst, t_table *table)
 		aux = aux->next;
 		i++;
 	}
-	node->next = lst; // this is to make it loop
-	lst->prev = node; // this is to make it loop
+	node->next = lst;
+	lst->prev = node;
 }
 
 struct timeval	*init_time(void)
@@ -103,11 +103,10 @@ struct timeval	*init_time(void)
 void	init_table(int argc, char **argv, t_table *t)
 {
 	t->number_of_philosophers = ft_atoi_long(argv[1]);
-	t->time_to_die = ft_atoi_long(argv[2]) * 1000;
-	t->time_to_eat = ft_atoi_long(argv[3]) * 1000;
-	t->time_to_sleep = ft_atoi_long(argv[4]) * 1000;
+	t->time_to_die = ft_atoi_long(argv[2]);
+	t->time_to_eat = ft_atoi_long(argv[3]);
+	t->time_to_sleep = ft_atoi_long(argv[4]);
 	t->optional_arg = false;
-	//t->time	= init_time();
 	pthread_mutex_init(&t->lock, NULL);
 	pthread_mutex_init(&t->print_lock, NULL);
 	t->end = false;
@@ -117,10 +116,8 @@ void	init_table(int argc, char **argv, t_table *t)
 		t->optional_arg = true;
 	}
 	t->philosophers = new_philospher();
-	t->philosophers->time_ill_die = t->time_to_die; // could be passed to new_philosopher() instead
+	t->philosophers->time_ill_die = t->time_to_die;
 	if (t->number_of_philosophers > 1)
-		add_philosphers(t->philosophers, t); // maybe move this into the main to initialise the tasks
-	//t->observer = pthread_create(&t->observer, NULL, start_observer, table);
-
+		add_philosphers(t->philosophers, t);
 	//THIS SHOULD BE ERROR HANDLED AND THE WHOLE PROCESS SHOULD BE KILLED
 }

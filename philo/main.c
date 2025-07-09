@@ -6,11 +6,32 @@
 /*   By: aehrl <aehrl@student.42malaga.com>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 21:25:45 by aehrl             #+#    #+#             */
-/*   Updated: 2025/07/02 19:47:10 by aehrl            ###   ########.fr       */
+/*   Updated: 2025/07/09 12:32:44 by aehrl            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+void	print_thread_process(t_table *table, t_philo *philo)
+{
+	unsigned long	time;
+	
+	pthread_mutex_lock(&table->print_lock);
+	time = calc_time_passed() - philo->start_time;
+	if (table->end == true)
+		printf("%s%ld %ld died\n", RED, time, philo->id);
+	else if (philo->eat == true)
+	{
+		printf("%s%ld %ld has taken a fork\n", WHITE, time, philo->id);
+		printf("%s%ld %ld has taken a fork\n", WHITE, time, philo->id);
+		printf("%ld %ld is eating\n", time, philo->id);
+	}	
+	else if (philo->sleep == true)
+		printf("%s%ld %ld is sleeping\n",BLUE, time, philo->id);
+	else
+		printf("%s%ld %ld is thinking\n",YELLOW ,time, philo->id);
+	pthread_mutex_unlock(&table->print_lock);
+}
 
 int	ft_check_valid_arguments(int argc, t_table *table)
 {
@@ -77,7 +98,6 @@ int main(int argc, char **argv)
 			aux = aux->next;
 		}
 		destroy_mutex(&table);
-		//print of the philosophers and their tasks should be handled by observer 
 	}
 	return (0);
 }

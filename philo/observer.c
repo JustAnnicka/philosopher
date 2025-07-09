@@ -6,7 +6,7 @@
 /*   By: aehrl <aehrl@student.42malaga.com>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 18:22:25 by aehrl             #+#    #+#             */
-/*   Updated: 2025/07/02 19:39:50 by aehrl            ###   ########.fr       */
+/*   Updated: 2025/07/09 10:48:13 by aehrl            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,7 @@ void*	start_observing(void *table)
 	printf("created observer thread\n");
 	while(1)
 	{
+		usleep(60);
 	 	if (t->optional_arg == true)
 		{
 			if (did_everyone_eat(t))
