@@ -6,11 +6,47 @@
 /*   By: aehrl <aehrl@student.42malaga.com>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/30 18:22:25 by aehrl             #+#    #+#             */
-/*   Updated: 2025/07/09 10:48:13 by aehrl            ###   ########.fr       */
+/*   Updated: 2025/07/09 12:56:38 by aehrl            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+void	solo_philosopher(t_table *table, t_philo *philo)
+{
+	unsigned long	time;
+
+	time = (calc_time_passed() - philo->start_time);
+	printf("%s%ld %ld has taken a fork\n", WHITE, time, philo->id);
+	pthread_mutex_lock(&table->lock);
+	usleep(table->time_to_die * 1000);
+	time = (calc_time_passed() - philo->start_time);
+	printf("%s%ld %ld died\n", RED, time, philo->id);
+	table->end = true;
+	pthread_mutex_unlock(&table->lock);
+}
+
+void	decide_first_action(t_table *table, t_philo *philo)
+{
+	if (table->number_of_philosophers == 1)
+		solo_philosopher(table, philo);
+	else if (table->number_of_philosophers % 2 == 0)
+	{
+		if (philo->id % 2 != 0)
+			task_eat(table, philo);
+		else
+			task_sleep(table, philo);
+	}
+	else
+	{
+		if (philo->id == table->number_of_philosophers && philo->id != 1)
+			task_think(table, philo);
+		else if (philo->id % 2 != 0)
+			task_eat(table, philo);
+		else
+			task_sleep(table, philo);
+	}
+}
 
 int	did_everyone_eat(t_table *table)
 {
@@ -19,18 +55,13 @@ int	did_everyone_eat(t_table *table)
 	bool				check;
 
 	aux = table->philosophers;
-	i = 0; //could also do this check with the philo number
+	i = 0;
 	check = true;
 	while (i < table->number_of_philosophers)
 	{
-	//	pthread_mutex_lock(&aux->plock);
-	//	pthread_mutex_lock(&table->print_lock);
-		//printf("%ld Times eaten: %ld\n", aux->id, aux->times_eaten);
 		if (aux->times_eaten < table->number_of_times_philosophers_must_eat)
 			check = false;
 		aux = aux->next;
-	//	pthread_mutex_unlock(&table->print_lock);
-	//	pthread_mutex_unlock(&aux->plock);
 		i++;
 	}
 	pthread_mutex_lock(&table->lock);
@@ -47,16 +78,15 @@ int	is_everyone_alive(t_table *table)
 	return (1);
 }
 
-void*	start_observing(void *table)
+void	*start_observing(void *table)
 {
-	t_table *t;
+	t_table	*t;
 
 	t = (t_table *)table;
-	printf("created observer thread\n");
-	while(1)
+	while (1)
 	{
 		usleep(60);
-	 	if (t->optional_arg == true)
+		if (t->optional_arg == true)
 		{
 			if (did_everyone_eat(t))
 				break ;
@@ -64,15 +94,5 @@ void*	start_observing(void *table)
 		if (t->end == true)
 			break ;
 	}
-	printf("end of observer thread\n");
-	return (table); 
+	return (table);
 }
-
-//new fucking plan
-//->have the philosophers lock the table when death and set the end attribute (print right then and there death message)
-//-> Now the observer will lock the table to check alive (in alive function) and then unlock it (THIS CAUSED DEADLOCK)
-//-> Observer will lock plock while checking the eaten state
-//-> if everyone has eaten all meals we will lock the table to set end
-
-//The new still alive function litterally just checks the table attribute (does not print)
-//-> THis should ensure that the process end no matter which philospher has died and we can remove the dead boolean from the philo stru

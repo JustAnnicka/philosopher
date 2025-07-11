@@ -2,8 +2,8 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -Werror -DM -fsanitize=address 
 
-NAME = philo
-SRC = main.c utils.c init.c tasks.c observer.c
+NAME = philo_bonus
+SRC = main_bonus.c utils_bonus.c init_bonus.c #tasks_bonus.c observer_bonus.c
 
 # Do not change these
 OBJ = $(SRC:.c=.o)
